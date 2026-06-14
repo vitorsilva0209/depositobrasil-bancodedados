@@ -1,56 +1,56 @@
 <?php
-//$servername = "192.168.103.4";
-//$username = "vitor";
-//$password = "Vit@theus123";
-//$dbname = "projeto2bimestre";
+$servername = "192.168.103.4";
+$username = "vitor";
+$password = "Vit@theus123";
+$dbname = "projeto2bimestre";
 
 
-//$conn = new mysqli($servername, $username, $password, $dbname);
+$conn = new mysqli($servername, $username, $password, $dbname);
 
 
-//if ($conn->connect_error) {
+if ($conn->connect_error) {
     //die("Falha na conexão: " . $conn->connect_error);
-//}
+}
 
-//echo "<p>Conectado com sucesso ao banco externo!</p>";
-
-
-//$sql = "SELECT * FROM produtos";
-
-//$resultado = $conn->query($sql);
+echo "<p>Conectado com sucesso ao banco externo!</p>";
 
 
-//if ($resultado->num_rows > 0) {
+$sql = "SELECT * FROM produtos";
 
-    //while ($linha = $resultado->fetch_assoc()) {
+$resultado = $conn->query($sql);
 
-      //  echo "<p>";
-        //echo $linha["nome"] . " - R$ " . $linha["preco"];
-        //echo "</p>";
 
-    //}
+if ($resultado->num_rows > 0) {
 
-//} else {
+    while ($linha = $resultado->fetch_assoc()) {
 
-//    echo "Nenhum produto encontrado.";
+        echo "<p>";
+        echo $linha["nome"] . " - R$ " . $linha["preco"];
+        echo "</p>";
 
-//}
+    }
 
-//$conn->close();
+} else {
 
-//include("config.php");
+    echo "Nenhum produto encontrado.";
 
-//echo "Conexão realizada com sucesso!<br>";
+}
 
-//$sql = "SELECT * FROM produtos";
-//$resultado = $conn->query($sql);
+$conn->close();
 
-///if ($resultado && $resultado->num_rows > 0) {
-   // while ($linha = $resultado->fetch_assoc()) {
-       // echo $linha["nome"] . "<br>";
-   // }
-//}// else {
+include("config.php");
+
+echo "Conexão realizada com sucesso!<br>";
+
+$sql = "SELECT * FROM produtos";
+$resultado = $conn->query($sql);
+
+if ($resultado && $resultado->num_rows > 0) {
+   while ($linha = $resultado->fetch_assoc()) {
+        echo $linha["nome"] . "<br>";
+    }
+} else {
     //echo "Nenhum produto encontrado.";
-//}
+}
 
 ?>
