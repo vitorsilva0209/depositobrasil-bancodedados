@@ -1,3 +1,29 @@
+<?php
+
+require("config.php");
+
+$sql = "SELECT * FROM produtos";
+$resultado = $conn->query($sql);
+
+
+$produtos = array(); 
+
+if ($resultado->num_rows > 0) {
+   
+    
+    while($linha = $resultado->fetch_assoc()) {
+        
+        $produtos[] = $linha; 
+    }
+    
+ 
+
+} else {
+    echo "<p>Nenhum produto encontrado.</p>";
+}
+?>
+
+
 
 <?php
 
@@ -280,6 +306,39 @@ $pagina = $_GET["pagina"] ?? "inicio";
 
 <?php elseif ($pagina == "produtos"): ?>
 
+<?php
+
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
+echo "";
+
+
+if (!file_exists("config.php")) {
+    die("<h2 style='color:orange; text-align:center;'>Erro: O arquivo 'config.php' não existe nesta pasta!</h2>");
+}
+
+require_once("config.php");
+
+if (!isset($conn)) {
+    die("<h2 style='color:orange; text-align:center;'>Erro: O arquivo config.php foi encontrado, mas a variável \$conn não existe nele!</h2>");
+}
+
+
+$produtos = array(); 
+$sql = "SELECT * FROM produtos";
+$resultado = $conn->query($sql);
+
+if (!$resultado) {
+    die("<h2 style='color:red; text-align:center;'>Erro na consulta SQL: " . $conn->error . "</h2>");
+}
+
+while($linha = $resultado->fetch_assoc()) {
+    $produtos[] = $linha; 
+}
+?>
+
 <h2>Produtos Disponíveis</h2>
 <div class="text-center mb-4">
     <span class="badge bg-danger fs-6">
@@ -287,80 +346,45 @@ $pagina = $_GET["pagina"] ?? "inicio";
     </span>
 </div>
 
+<?php if (!empty($produtos)): ?>
+    <?php foreach ($produtos as $produto): ?>
+        
+        <?php 
+            $id = $produto['id'] ?? 0;
+            $nome = $produto['nome'] ?? 'Produto';
+            $preco = $produto['preco'] ?? 0.00;
+            $imagem_banco = isset($produto['imagem']) ? trim($produto['imagem']) : '';
 
+            $src_imagem = "";
+            if (!empty($imagem_banco) && strlen($imagem_banco) > 300) {
+                $src_imagem = "data:image/webp;base64," . $imagem_banco;
+            } else {
+                if (strpos(strtolower($nome), 'cimento') !== false) $src_imagem = "imagem/cimento.webp";
+                elseif (strpos(strtolower($nome), 'areia') !== false) $src_imagem = "imagem/54fd88d83d.webp";
+                elseif (strpos(strtolower($nome), 'brita') !== false || strpos(strtolower($nome), 'pedra') !== false) $src_imagem = "imagem/pedra-brita-britada-preta-curitiba1-50d5f8157d421aebac15421213758687-640-0.webp";
+                elseif (strpos(strtolower($nome), 'tijolo') !== false) $src_imagem = "imagem/tijolo.webp";
+                elseif (strpos(strtolower($nome), 'cal') !== false) $src_imagem = "imagem/cal hidratada.webp";
+                elseif (strpos(strtolower($nome), 'vergalhao') !== false || strpos(strtolower($nome), 'vergalhão') !== false) $src_imagem = "imagem/vergalhao.webp";
+                else $src_imagem = "imagem/sem-foto.webp";
+            }
+        ?>
 
-<div class="produto">
-    <div>
-        <h3>Cimento CSN</h3>
-        <p>R$ 100,90</p>
-        <a class="btn-comprar" href="index.php?pagina=produtos&comprar=39.90">Comprar</a>
-        <p class="pagamento">Pagamentos: PIX | Crédito | Débito | Boleto</p>
-    </div>
-    <div>
-        <img src="imagem/cimento.webp" style="width:80px;">
-    </div>
-</div>
+        <div class="produto" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding: 15px; border-bottom: 1px solid #444;">
+            <div>
+                <h3><?php echo htmlspecialchars($nome); ?></h3> 
+                <p>R$ <?php echo number_format($preco, 2, ',', '.'); ?></p>
+                <a class="btn-comprar" href="index.php?pagina=produtos&produto_id=<?php echo $id; ?>&comprar=<?php echo $preco; ?>">Comprar</a>
+                <p class="pagamento" style="margin-top: 10px; font-size: 12px; color: #aaa;">Pagamentos: PIX | Crédito | Débito | Boleto</p>
+            </div>
+            <div>
+                <img src="<?php echo $src_imagem; ?>" style="width:80px; height:80px; object-fit: contain; background: #fff; border-radius: 4px;" alt="<?php echo htmlspecialchars($nome); ?>">
+            </div>
+        </div>
 
-<div class="produto">
-    <div>
-        <h3>Areia Lavada Média</h3>
-        <p>R$ 159,90</p>
-        <a class="btn-comprar" href="index.php?pagina=produtos&comprar=169.90">Comprar</a>
-        <p class="pagamento">Pagamentos: PIX | Crédito | Débito | Boleto</p>
-    </div>
-    <div>
-        <img src="imagem/54fd88d83d.webp" style="width:80px;">
-    </div>
-</div>
-
-<div class="produto">
-    <div>
-        <h3>Pedra Brita 1/2 Concreto</h3>
-        <p>R$ 169,90</p>
-        <a class="btn-comprar" href="index.php?pagina=produtos&comprar=169.90">Comprar</a>
-        <p class="pagamento">Pagamentos: PIX | Crédito | Débito | Boleto</p>
-    </div>
-    <div>
-        <img src="imagem/pedra-brita-britada-preta-curitiba1-50d5f8157d421aebac15421213758687-640-0.webp" style="width:80px;">
-    </div>
-</div>
-
-<div class="produto">
-    <div>
-        <h3>Tijolo 6 furos Milheiro</h3>
-        <p>R$ 620,00</p>
-        <a class="btn-comprar" href="index.php?pagina=produtos&comprar=850">Comprar</a>
-        <p class="pagamento">Pagamentos: PIX | Crédito | Débito | Boleto</p>
-    </div>
-    <div>
-        <img src="imagem/tijolo.webp" style="width: 90px;">
-    </div>
-</div>
-
-<div class="produto">
-    <div>
-        <h3>Cal Hidratada</h3>
-        <p>R$ 128,00</p>
-        <a class="btn-comprar" href="index.php?pagina=produtos&comprar=28">Comprar</a>
-        <p class="pagamento">Pagamentos: PIX | Crédito | Débito | Boleto</p>
-    </div>
-    <div>
-        <img src="imagem/cal hidratada.webp" style="width: 80px;">
-    </div>
-</div>
-
-<div class="produto">
-    <div>
-        <h3>Vergalhão 8mm</h3>
-        <p>R$ 145,00</p>
-        <a class="btn-comprar" href="index.php?pagina=produtos&comprar=45">Comprar</a>
-        <p class="pagamento">Pagamentos: PIX | Crédito | Débito | Boleto</p>
-    </div>
-    <div>
-        <img src="imagem/vergalhao.webp" style="width: 80px;">
-    </div>
-</div>
-
+    <?php endforeach; ?>
+<?php else: ?>
+    <p class="text-center" style="color: #bbb; margin-top: 20px;">Nenhum produto cadastrado na tabela.</p>
+<?php endif; ?>
 <?php elseif ($pagina == "historia"): ?>
 
 <h2>História da Loja</h2>
